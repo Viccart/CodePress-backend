@@ -38,7 +38,7 @@ describe("GET /api/topics", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Page not found");
+        expect(msg).toBe("Sorry, this endpoint does not exist");
       });
   });
 });
