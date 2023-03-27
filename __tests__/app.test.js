@@ -2,15 +2,10 @@ const app = require("../app");
 const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
-const {
-  topicData,
-  userData,
-  articleData,
-  commentData,
-} = require("../db/data/test-data/index");
+const data = require("../db/data/test-data/index");
 
 beforeEach(() => {
-  return seed({ topicData, userData, articleData, commentData });
+  return seed(data);
 });
 
 afterAll(() => {
@@ -41,8 +36,9 @@ describe("GET /api/topics", () => {
     return request(app)
       .get("/api/no-topics")
       .expect(404)
-      .then((err) => {
-        return err;
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Page not found");
       });
   });
 });
