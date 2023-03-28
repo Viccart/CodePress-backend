@@ -13,7 +13,7 @@ afterAll(() => {
 });
 
 describe("GET /api/topics", () => {
-  test("get 200", () => {
+  test("get 200 return all topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -44,7 +44,7 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET 200 /api/articles/:article_id", () => {
-  test("get 200", () => {
+  test("get 200 return article by article id", () => {
     return request(app)
       .get("/api/articles/2")
       .expect(200)
@@ -79,6 +79,42 @@ describe("GET 200 /api/articles/:article_id", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("Article does not exist");
+      });
+  });
+});
+describe("GET /api/articles", () => {
+  test("get 200 return all articles including comment count", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+
+        expect(articles).toBeInstanceOf(Array);
+        expect(articles).toHaveLength(5);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("STATUS 404 incorrect endpoint", () => {
+    return request(app)
+      .get("/api/no-articles")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Endpoint does not exist");
       });
   });
 });
