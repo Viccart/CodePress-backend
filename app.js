@@ -5,6 +5,7 @@ const {
   handleInvalidPath,
   handle404Errors,
   handleCustomErrors,
+  handle500Errors,
 } = require("./error");
 const app = express();
 
@@ -15,4 +16,5 @@ app.all("/*", handleInvalidPath);
 
 app.use(handle404Errors);
 app.use(handleCustomErrors);
+app.use(handle500Errors);
 module.exports = app;

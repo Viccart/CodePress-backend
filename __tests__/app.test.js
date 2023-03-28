@@ -64,7 +64,7 @@ describe("GET 200 /api/articles/:article_id", () => {
         });
       });
   });
-  test("STATUS 404 responds with a 404 and correct message for an invalid article", () => {
+  test("STATUS 400 responds with a 400 and correct message for an invalid article", () => {
     return request(app)
       .get("/api/articles/hello")
       .expect(400)
