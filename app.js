@@ -3,7 +3,7 @@ const { getTopics } = require("./controllers/topics.controllers");
 const { getArticleById } = require("./controllers/articles.controllers");
 const {
   handleInvalidPath,
-  handle404Errors,
+  handlePSQLErrors,
   handleCustomErrors,
   handle500Errors,
 } = require("./error");
@@ -14,7 +14,7 @@ app.get("/api/articles/:article_id", getArticleById);
 
 app.all("/*", handleInvalidPath);
 
-app.use(handle404Errors);
+app.use(handlePSQLErrors);
 app.use(handleCustomErrors);
 app.use(handle500Errors);
 module.exports = app;

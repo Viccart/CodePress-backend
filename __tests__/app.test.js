@@ -38,7 +38,7 @@ describe("GET /api/topics", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Sorry, this endpoint does not exist");
+        expect(msg).toBe("Endpoint does not exist");
       });
   });
 });
@@ -50,7 +50,6 @@ describe("GET 200 /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        expect(article).toBeInstanceOf(Object);
         expect(Object.keys(article).length).toBe(8);
         expect(article).toEqual({
           author: expect.any(String),
@@ -70,7 +69,7 @@ describe("GET 200 /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Sorry, this is not a valid article id");
+        expect(msg).toBe("Invalid article id");
       });
   });
   test("STATUS 404 responds with a 404 and correct message for a valid article that does not exist", () => {
@@ -79,7 +78,7 @@ describe("GET 200 /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Sorry, this article ID does not exist");
+        expect(msg).toBe("Article does not exist");
       });
   });
 });
