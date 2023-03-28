@@ -3,6 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data/index");
+const sorted = require("jest-sorted");
 
 beforeEach(() => {
   return seed(data);
@@ -92,6 +93,7 @@ describe("GET /api/articles", () => {
 
         expect(articles).toBeInstanceOf(Array);
         expect(articles).toHaveLength(5);
+        expect(articles).toBeSorted({ key: "created_at", descending: true });
         articles.forEach((article) => {
           expect(article).toEqual(
             expect.objectContaining({
