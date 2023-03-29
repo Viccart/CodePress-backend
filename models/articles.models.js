@@ -32,13 +32,23 @@ exports.selectArticles = () => {
 exports.selectArticleCommentsById = (articleID) => {
   return db
     .query(
-      `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, articles.article_id
+      `SELECT comment_id, votes, created_at, author, body, article_id
         FROM comments
-        RIGHT JOIN articles
-        ON articles.article_id = comments.article_id
-        WHERE articles.article_id = $1
-        ORDER BY created_at DESC;`,
+          WHERE article_id = $1
+          ORDER BY created_at DESC;`,
       [articleID]
+    )
+    .then((result) => {
+      return result.rows;
+    });
+};
+
+exports.checkArticleExists = (article_id) => {
+  return db
+    .query(
+      `SELECT * FROM articles
+                WHERE article_id = $1;`,
+      [article_id]
     )
     .then((result) => {
       if (result.rowCount === 0) {
@@ -47,6 +57,46 @@ exports.selectArticleCommentsById = (articleID) => {
           msg: "Article id does not exist",
         });
       }
-      return result.rows;
     });
 };
+
+// FAILING CODE MAKING SECOND QUERY AFTER GETTING THE ARTICLES
+// exports.selectArticleCommentsById = (articleID) => {
+//   return db
+//     .query(
+//       `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, articles.article_id
+//         FROM comments
+//         RIGHT JOIN articles
+//         ON articles.article_id = comments.article_id
+//         WHERE articles.article_id = $1
+//         ORDER BY created_at DESC;`,
+//       [articleID]
+//     )
+//     .then((result) => {
+//       if (result.rowCount === 0) {
+//         return checkCommentExists(articleID).then(() => {
+//           return result.rows;
+//         });
+//       }
+//       return result.rows;
+//     });
+// };
+
+// exports.checkCommentExists = (article_id) => {
+//   return db
+//     .query(
+//       `SELECT * FROM articles
+//     WHERE article_id = $1;`,
+//       [article_id]
+//     )
+//     .then((result) => {
+//       if (result.rowCount === 0) {
+//         return Promise.reject({
+//           status: 404,
+//           msg: "Article id does not exist",
+//         });
+//       }
+//       console.log(result.rows);
+//       return result.rows[0];
+//     });
+// };

@@ -144,22 +144,14 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("get 200 return null for all elements of a comment object for an article that does not have comments", () => {
+  test("get 200 returns an empty array for an article that does not have comments", () => {
     return request(app)
       .get("/api/articles/2/comments")
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
         expect(comments).toBeInstanceOf(Array);
-        expect(comments).toHaveLength(1);
-        expect.objectContaining({
-          comment_id: expect.any(null),
-          votes: expect.any(null),
-          created_at: expect.any(null),
-          author: expect.any(null),
-          body: expect.any(null),
-          article_id: expect.any(Number),
-        });
+        expect(comments).toEqual([]);
       });
   });
   test("STATUS 400 responds with a 400 and correct message for an invalid article id", () => {

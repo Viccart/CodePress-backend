@@ -2,6 +2,7 @@ const {
   selectArticles,
   selectArticle,
   selectArticleCommentsById,
+  checkArticleExists,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -23,11 +24,29 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticleCommentsById = (req, res, next) => {
   const { article_id } = req.params;
-  selectArticleCommentsById(article_id)
-    .then((comments) => {
+
+  const articlePromises = [
+    selectArticleCommentsById(article_id),
+    checkArticleExists(article_id),
+  ];
+
+  Promise.all(articlePromises)
+    .then(([comments]) => {
       res.status(200).send({ comments });
     })
     .catch((err) => {
       next(err);
     });
 };
+
+// FAILING CODE MAKING SECOND QUERY AFTER GETTING THE ARTICLES
+// exports.getArticleCommentsById = (req, res, next) => {
+//   const { article_id } = req.params;
+//   selectArticleCommentsById(article_id)
+//     .then((comments) => {
+//       res.status(200).send({ comments });
+//     })
+//     .catch((err) => {
+//       next(err);
+//     });
+// };
