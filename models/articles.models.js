@@ -7,7 +7,7 @@ exports.selectArticle = (articleId) => {
       if (article.rowCount === 0) {
         return Promise.reject({
           status: 404,
-          msg: "Article does not exist",
+          msg: "Article id does not exist",
         });
       }
       return article.rows[0];
@@ -19,12 +19,34 @@ exports.selectArticles = () => {
     .query(
       `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST (COUNT(comment_id) AS INT) AS comment_count
     FROM articles 
-    JOIN comments 
+    LEFT JOIN comments 
     ON articles.article_id = comments.article_id
     GROUP BY articles.article_id 
     ORDER BY created_at DESC;`
     )
     .then((result) => {
+      return result.rows;
+    });
+};
+
+exports.selectArticleCommentsById = (articleID) => {
+  return db
+    .query(
+      `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, articles.article_id
+        FROM comments
+        RIGHT JOIN articles
+        ON articles.article_id = comments.article_id
+        WHERE articles.article_id = $1
+        ORDER BY created_at DESC;`,
+      [articleID]
+    )
+    .then((result) => {
+      if (result.rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Article id does not exist",
+        });
+      }
       return result.rows;
     });
 };
