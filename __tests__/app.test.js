@@ -224,7 +224,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Username or article id does not exist");
+        expect(msg).toBe("Article id does not exist");
       });
   });
   test("STATUS 404 responds with a 404 and correct message for a valid article with username that does not exist", () => {
@@ -239,7 +239,46 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Username or article id does not exist");
+        expect(msg).toBe("Username does not exist");
+      });
+  });
+  test("STATUS 201 ignores unnecessary properties", () => {
+    const comment = {
+      body: "Testing, testing, 123",
+      username: "icellusedkars",
+      votes: 50,
+    };
+
+    return request(app)
+      .post("/api/articles/9/comments")
+      .send(comment)
+      .expect(201)
+      .then((response) => {
+        const { body } = response;
+        expect(body).toHaveProperty("comment_id");
+        expect(Object.keys(body).length).toBe(6);
+        expect(body).toMatchObject({
+          author: expect.any(String),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          comment_id: expect.any(Number),
+        });
+      });
+  });
+  test("STATUS 400 responds with a 400 and correct message for missing required field(s)", () => {
+    const comment = {
+      body: "",
+    };
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Missing required field(s)");
       });
   });
 });
