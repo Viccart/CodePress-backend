@@ -282,3 +282,51 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("patch 200 responds with the updated article", () => {
+    const incVotes = { inc_votes: 50 };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(incVotes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body).length).toBe(8);
+        expect(body.votes).toBe(50);
+        expect(body).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("STATUS 400 responds with a 400 and correct message for an invalid article id", () => {
+    const incVotes = { inc_votes: 50 };
+
+    return request(app)
+      .patch("/api/articles/hello")
+      .send(incVotes)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid article id");
+      });
+  });
+  test("STATUS 404 responds with a 404 and correct message for a valid article that does not exist", () => {
+    const incVotes = { inc_votes: 50 };
+
+    return request(app)
+      .patch("/api/articles/999999")
+      .send(incVotes)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Article id does not exist");
+      });
+  });
+});

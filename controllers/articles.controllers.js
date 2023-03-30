@@ -4,6 +4,7 @@ const {
   selectArticleCommentsById,
   checkArticleExists,
   insertComment,
+  updateArticleVotes,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -48,6 +49,20 @@ exports.postNewCommentToArticleID = (req, res, next) => {
   insertComment(commentToAdd)
     .then((newComment) => {
       res.status(201).send(newComment);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.editArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  const { body } = req;
+  const incValue = body.inc_votes;
+
+  updateArticleVotes(article_id, incValue)
+    .then((updatedArticle) => {
+      res.status(200).send(updatedArticle);
     })
     .catch((err) => {
       next(err);

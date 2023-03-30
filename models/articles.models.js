@@ -77,3 +77,23 @@ exports.insertComment = (body) => {
       return result.rows[0];
     });
 };
+
+exports.updateArticleVotes = (article_id, incValue) => {
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .then((result) => {
+      if (result.rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Article id does not exist",
+        });
+      }
+      const rows = result.rows;
+      const oldArticle = rows[0];
+      oldArticle.votes += incValue;
+      return oldArticle;
+    })
+    .then((updatedArticle) => {
+      return updatedArticle;
+    });
+};

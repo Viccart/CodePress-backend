@@ -5,6 +5,7 @@ const {
   getArticles,
   getArticleCommentsById,
   postNewCommentToArticleID,
+  editArticle,
 } = require("./controllers/articles.controllers");
 const {
   handleInvalidPath,
@@ -20,6 +21,7 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getArticleCommentsById);
 app.post("/api/articles/:article_id/comments", postNewCommentToArticleID);
+app.patch("/api/articles/:article_id", editArticle);
 
 app.all("/*", handleInvalidPath);
 
