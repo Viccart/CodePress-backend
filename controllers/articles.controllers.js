@@ -3,6 +3,7 @@ const {
   selectArticle,
   selectArticleCommentsById,
   checkArticleExists,
+  insertComment,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -39,14 +40,16 @@ exports.getArticleCommentsById = (req, res, next) => {
     });
 };
 
-// FAILING CODE MAKING SECOND QUERY AFTER GETTING THE ARTICLES
-// exports.getArticleCommentsById = (req, res, next) => {
-//   const { article_id } = req.params;
-//   selectArticleCommentsById(article_id)
-//     .then((comments) => {
-//       res.status(200).send({ comments });
-//     })
-//     .catch((err) => {
-//       next(err);
-//     });
-// };
+exports.postNewCommentToArticleID = (req, res, next) => {
+  const { article_id } = req.params;
+  const { body } = req;
+
+  const commentToAdd = { body: body.body, author: body.username, article_id };
+  insertComment(commentToAdd)
+    .then((newComment) => {
+      res.status(201).send(newComment);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
