@@ -64,7 +64,7 @@ describe("GET 200 /api/articles/:article_id", () => {
         });
       });
   });
-  test("STATUS 400 responds with a 400 and correct message for an invalid article", () => {
+  test("STATUS 400 responds with a 400 and correct message for an invalid article id", () => {
     return request(app)
       .get("/api/articles/hello")
       .expect(400)
@@ -79,7 +79,7 @@ describe("GET 200 /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Article does not exist");
+        expect(msg).toBe("Article id does not exist");
       });
   });
 });
@@ -92,7 +92,7 @@ describe("GET /api/articles", () => {
         const { articles } = body;
 
         expect(articles).toBeInstanceOf(Array);
-        expect(articles).toHaveLength(5);
+        expect(articles).toHaveLength(12);
         expect(articles).toBeSorted({ key: "created_at", descending: true });
         articles.forEach((article) => {
           expect(article).toEqual(
@@ -117,6 +117,59 @@ describe("GET /api/articles", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("Endpoint does not exist");
+      });
+  });
+});
+describe("GET /api/articles/:article_id/comments", () => {
+  test("get 200 return all comments from an article by article id where the article does have comments", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(11);
+        expect(comments).toBeSorted({ key: "created_at", descending: true });
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  test("get 200 returns an empty array for an article that does not have comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toEqual([]);
+      });
+  });
+  test("STATUS 400 responds with a 400 and correct message for an invalid article id", () => {
+    return request(app)
+      .get("/api/articles/hello/comments")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid article id");
+      });
+  });
+  test("STATUS 404 responds with a 404 and correct message for a valid article that does not exist", () => {
+    return request(app)
+      .get("/api/articles/999999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Article id does not exist");
       });
   });
 });
