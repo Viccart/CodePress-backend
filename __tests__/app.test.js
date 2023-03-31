@@ -84,7 +84,7 @@ describe("GET 200 /api/articles/:article_id", () => {
   });
 });
 describe("GET /api/articles", () => {
-  test("get 200 return all articles including comment count", () => {
+  test("get 200 return all articles including comment count sorted as default by date", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -119,7 +119,87 @@ describe("GET /api/articles", () => {
         expect(msg).toBe("Endpoint does not exist");
       });
   });
+  test("200: accepts a topic query which responds with only those topics", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(1);
+        articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
+  });
+  test("200: responds with an empty array for topic query which exists but contains no articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toEqual([]);
+      });
+  });
+  test("404: responds with not found for topic that does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=420")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Topic does not exist");
+      });
+  });
+  test("200: accepts a sort by query which sorts by that column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        const articlesCopy = [...articles];
+        const sortedArticles = articlesCopy.sort((articleA, articleB) => {
+          if (articleA.title < articleB.title) return 1;
+          if (articleA.title > articleB.title) return -1;
+          return 0;
+        });
+        expect(articles).toEqual(sortedArticles);
+        expect(articles).toBeInstanceOf(Array);
+        expect(articles).toHaveLength(12);
+      });
+  });
+  test("200: accepts an order query which returns in ascending or descending order (defaults to desc)", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        const articlesCopy = [...articles];
+        const sortedArticles = articlesCopy.sort((articleA, articleB) => {
+          if (articleA.title > articleB.title) return 1;
+          if (articleA.title < articleB.title) return -1;
+          return 0;
+        });
+        expect(articles).toEqual(sortedArticles);
+        expect(articles).toBeInstanceOf(Array);
+        expect(articles).toHaveLength(12);
+      });
+  });
+  test("400: returns a 400 bad request when sorting by cateogry that doesn't exist", () => {
+    return request(app)
+      .get("/api/articles?sort_by=danger")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Sort Query");
+      });
+  });
+  test("400: returns a 400 bad request when ordering by anything other than asc or desc", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=danger")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Order Query");
+      });
+  });
 });
+
 describe("GET /api/articles/:article_id/comments", () => {
   test("get 200 return all comments from an article by article id where the article does have comments", () => {
     return request(app)
