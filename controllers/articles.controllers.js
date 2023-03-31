@@ -5,6 +5,7 @@ const {
   checkArticleExists,
   insertComment,
   updateArticleVotes,
+  checkTopicExists,
 } = require("../models/articles.models");
 
 exports.getArticleById = (req, res, next) => {
@@ -19,9 +20,20 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
+  const { topic, sort_by, order } = req.query;
+
+  const topicPromises = [
+    selectArticles(topic, sort_by, order),
+    checkTopicExists(topic),
+  ];
+
+  Promise.all(topicPromises)
+    .then(([articles]) => {
+      res.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getArticleCommentsById = (req, res, next) => {

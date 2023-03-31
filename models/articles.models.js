@@ -14,18 +14,59 @@ exports.selectArticle = (articleId) => {
     });
 };
 
-exports.selectArticles = () => {
+exports.selectArticles = (topic, sortBy = "created_at", orderBy = "desc") => {
+  if (
+    sortBy &&
+    sortBy !== "title" &&
+    sortBy !== "topic" &&
+    sortBy !== "author" &&
+    sortBy !== "body" &&
+    sortBy !== "created_at" &&
+    sortBy !== "votes" &&
+    sortBy !== "article_img_url"
+  ) {
+    return Promise.reject({ status: 400, msg: "Invalid Sort Query" });
+  }
+  if (orderBy && orderBy !== "asc" && orderBy !== "desc") {
+    return Promise.reject({ status: 400, msg: "Invalid Order Query" });
+  }
+  let selectArticlesQueryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST (COUNT(comment_id) AS INT) AS comment_count
+  FROM articles LEFT JOIN comments 
+  ON articles.article_id = comments.article_id`;
+  const queryParameters = [];
+
+  if (topic) {
+    selectArticlesQueryString += ` WHERE topic = $1`;
+    queryParameters.push(topic);
+  }
+  selectArticlesQueryString += `   GROUP BY articles.article_id`;
+
+  if (sortBy) {
+    selectArticlesQueryString += ` ORDER BY ${sortBy}`;
+  }
+  if (orderBy) {
+    selectArticlesQueryString += ` ${orderBy}`;
+  }
+
+  return db.query(selectArticlesQueryString, queryParameters).then((result) => {
+    return result.rows;
+  });
+};
+
+exports.checkTopicExists = (topic) => {
   return db
     .query(
-      `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST (COUNT(comment_id) AS INT) AS comment_count
-    FROM articles 
-    LEFT JOIN comments 
-    ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id 
-    ORDER BY created_at DESC;`
+      `SELECT * FROM topics
+                WHERE slug = $1;`,
+      [topic]
     )
     .then((result) => {
-      return result.rows;
+      if (topic && result.rowCount === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Topic does not exist",
+        });
+      }
     });
 };
 
