@@ -51,7 +51,7 @@ describe("GET 200 /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
-        expect(Object.keys(article).length).toBe(8);
+        expect(Object.keys(article).length).toBe(9);
         expect(article).toEqual({
           author: expect.any(String),
           title: expect.any(String),
@@ -61,6 +61,7 @@ describe("GET 200 /api/articles/:article_id", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
+          comment_count: expect.any(Number),
         });
       });
   });

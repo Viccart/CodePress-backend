@@ -2,7 +2,12 @@ const db = require("../db/connection.js");
 
 exports.selectArticle = (articleId) => {
   return db
-    .query(`SELECT * FROM articles WHERE article_id = $1`, [articleId])
+    .query(
+      `SELECT *, CAST ((SELECT COUNT(*) FROM articles WHERE article_id = $1) as INT) AS comment_count
+    FROM articles WHERE article_id = $1
+    GROUP BY articles.article_id;`,
+      [articleId]
+    )
     .then((article) => {
       if (article.rowCount === 0) {
         return Promise.reject({
@@ -73,7 +78,7 @@ exports.checkTopicExists = (topic) => {
 exports.selectArticleCommentsById = (articleID) => {
   return db
     .query(
-      `SELECT comment_id, votes, created_at, author, body, article_id
+      `SELECT comment_id, votes, created_at, author, body, article_id 
         FROM comments
           WHERE article_id = $1
           ORDER BY created_at DESC;`,
