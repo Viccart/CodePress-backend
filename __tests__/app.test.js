@@ -70,7 +70,7 @@ describe("GET 200 /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Invalid article id");
+        expect(msg).toBe("Invalid id");
       });
   });
   test("STATUS 404 responds with a 404 and correct message for a valid article that does not exist", () => {
@@ -160,7 +160,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Invalid article id");
+        expect(msg).toBe("Invalid id");
       });
   });
   test("STATUS 404 responds with a 404 and correct message for a valid article that does not exist", () => {
@@ -209,7 +209,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Invalid article id");
+        expect(msg).toBe("Invalid id");
       });
   });
   test("STATUS 404 responds with a 404 and correct message for a valid article that does not exist", () => {
@@ -315,7 +315,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Invalid article id");
+        expect(msg).toBe("Invalid id");
       });
   });
   test("STATUS 404 responds with a 404 and correct message for a valid article that does not exist", () => {
@@ -352,6 +352,29 @@ describe("PATCH /api/articles/:article_id", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("Missing input property");
+      });
+  });
+});
+describe("DELETE /api/comments/:comment_id", () => {
+  test("status 204: responds with an empty response", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("status 400 and correct message for an invalid comment id", () => {
+    return request(app)
+      .delete("/api/comments/hello")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid id");
+      });
+  });
+  test("status 404 and correct message for a valid comment id that doesn't exist", () => {
+    return request(app)
+      .delete("/api/comments/99999")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Comment id does not exist");
       });
   });
 });

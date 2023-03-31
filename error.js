@@ -4,7 +4,7 @@ exports.handleInvalidPath = (req, res) => {
 
 exports.handlePSQLErrors = (err, req, res, next) => {
   if (err.code === "22P02") {
-    res.status(400).send({ msg: "Invalid article id" });
+    res.status(400).send({ msg: "Invalid id" });
   } else if (
     err.code === "23503" &&
     err.constraint === "comments_article_id_fkey"

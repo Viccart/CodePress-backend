@@ -13,6 +13,7 @@ const {
   handleCustomErrors,
   handle500Errors,
 } = require("./error");
+const { deleteCommentById } = require("./controllers/comments.controllers");
 const app = express();
 app.use(express.json());
 
@@ -22,6 +23,7 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getArticleCommentsById);
 app.post("/api/articles/:article_id/comments", postNewCommentToArticleID);
 app.patch("/api/articles/:article_id", editArticle);
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.all("/*", handleInvalidPath);
 
