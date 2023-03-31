@@ -87,6 +87,16 @@ exports.updateArticleVotes = (article_id, incValue) => {
           status: 404,
           msg: "Article id does not exist",
         });
+      } else if (!incValue) {
+        return Promise.reject({
+          status: 400,
+          msg: "Missing input property",
+        });
+      } else if (isNaN(incValue)) {
+        return Promise.reject({
+          status: 400,
+          msg: "Invalid votes input",
+        });
       }
       const rows = result.rows;
       const oldArticle = rows[0];
@@ -94,6 +104,6 @@ exports.updateArticleVotes = (article_id, incValue) => {
       return oldArticle;
     })
     .then((updatedArticle) => {
-      return updatedArticle;
+      return { article: updatedArticle };
     });
 };

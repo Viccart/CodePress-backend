@@ -291,9 +291,10 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(incVotes)
       .expect(200)
       .then(({ body }) => {
-        expect(Object.keys(body).length).toBe(8);
-        expect(body.votes).toBe(50);
-        expect(body).toMatchObject({
+        expect(Object.keys(body).length).toBe(1);
+        expect(Object.keys(body.article).length).toBe(8);
+        expect(body.article.votes).toBe(50);
+        expect(body.article).toMatchObject({
           article_id: expect.any(Number),
           title: expect.any(String),
           topic: expect.any(String),
@@ -327,6 +328,30 @@ describe("PATCH /api/articles/:article_id", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("Article id does not exist");
+      });
+  });
+  test("STATUS 400 responds with a 400 and correct message where the votes are not a number", () => {
+    const incVotes = { inc_votes: "ten" };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(incVotes)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid votes input");
+      });
+  });
+  test("STATUS 400 responds with a 400 and correct message where the body has a missing property {}", () => {
+    const incVotes = {};
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(incVotes)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Missing input property");
       });
   });
 });
