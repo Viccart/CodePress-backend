@@ -14,7 +14,7 @@ exports.selectArticle = (articleId) => {
     });
 };
 
-exports.selectArticles = (topic, sortBy, orderBy) => {
+exports.selectArticles = (topic, sortBy = "created_at", orderBy = "desc") => {
   if (
     sortBy &&
     sortBy !== "title" &&
@@ -43,14 +43,9 @@ exports.selectArticles = (topic, sortBy, orderBy) => {
 
   if (sortBy) {
     selectArticlesQueryString += ` ORDER BY ${sortBy}`;
-  } else {
-    selectArticlesQueryString += ` ORDER BY created_at`;
   }
-
   if (orderBy) {
     selectArticlesQueryString += ` ${orderBy}`;
-  } else {
-    selectArticlesQueryString += ` DESC`;
   }
 
   return db.query(selectArticlesQueryString, queryParameters).then((result) => {
