@@ -146,10 +146,15 @@ exports.updateArticleVotes = (article_id, incValue) => {
       }
       const rows = result.rows;
       const oldArticle = rows[0];
-      oldArticle.votes += incValue;
-      return oldArticle;
-    })
-    .then((updatedArticle) => {
-      return { article: updatedArticle };
+      const newVotes = oldArticle.votes + incValue;
+      return db
+        .query(
+          `UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *`,
+          [newVotes, article_id]
+        )
+        .then((result) => {
+          const updatedArticle = result.rows[0];
+          return { article: updatedArticle };
+        });
     });
 };
