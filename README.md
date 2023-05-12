@@ -7,11 +7,11 @@ This project is a RESTful API built with Node.js, Express.js, and PostgreSQL. Th
 ## Kanban
 
 https://trello.com/b/12CekBgN/be-project
-Tech Stack:
+
+## Tech Stack:
 Node.js
 Express.js
 PostgreSQL
-Installation
 
 ## Initial Setup
 
