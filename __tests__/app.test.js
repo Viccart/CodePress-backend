@@ -438,7 +438,9 @@ describe("PATCH /api/articles/:article_id", () => {
 });
 describe("DELETE /api/comments/:comment_id", () => {
   test("status 204: responds with an empty response", () => {
-    return request(app).delete("/api/comments/1").expect(204);
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204);
   });
   test("status 400 and correct message for an invalid comment id", () => {
     return request(app)
