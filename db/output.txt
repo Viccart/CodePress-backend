@@ -1,0 +1,6 @@
+You are now connected to database "nc_news" as user "hannah".
+  author  |                     title                     | article_id | topic |     created_at      | votes |                                            article_img_url                                            | comment_count 
+----------+-----------------------------------------------+------------+-------+---------------------+-------+-------------------------------------------------------------------------------------------------------+---------------
+ rogersop | UNCOVERED: catspiracy to bring down democracy |          5 | cats  | 2020-08-03 14:14:00 |     0 | https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700 |             2
+(1 row)
+
